@@ -26,4 +26,20 @@ class UserController extends Controller
 
         return ['user' => $user, 'token' => $token];
     }
+
+    /**
+     * ユーザを登録する
+     * @param Request $request
+     * 
+     * @return array
+     */
+    public function register(Request $request)
+    {
+        $newUser = $request->only('name', 'email', 'password');
+        $user = new User();
+        $user->fill($newUser);
+        $user->save();
+        return $user;
+    }
+
 }

@@ -36,6 +36,16 @@ const actions = {
         })
     },
 
+    register({ commit }, payload) {
+        axios.post("http://localhost/api/user/register", payload)
+        .then(response => {
+            commit('login', response.data.user)
+            localStorage.setItem('token', response.data.token)
+        }).catch(err => {
+
+        })
+    },
+
     logout() {
         localStorage.removeItem('token')
         commit('logout')

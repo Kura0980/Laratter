@@ -9,7 +9,8 @@
             <label for="exampleInputPassword1">パスワード</label>
             <input type="password" class="form-control" placeholder="パスワード" v-model="password">
         </div>
-        <button type="submit" class="btn btn-primary" @click="submit">Login</button>
+        <button type="submit" class="btn btn-primary" @click="submit">ログイン</button>
+        <router-link to="/signup" tag="button" class="btn btn-outline-primary">アカウント作成</router-link>
     </div>
 </template>
 
