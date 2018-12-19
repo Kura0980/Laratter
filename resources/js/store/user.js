@@ -1,13 +1,17 @@
+import router from '../routes'
+import http from '../http'
 
 const state =  {
-    authenticated: false,
+    authenicated: false,
     user: {},
-    error: ''
 }
 
 const getters = {
-    error: state => {
-        return state.error
+    authenicated: state => {
+        return state.authenicated
+    },
+    user: state => {
+        return state.user
     }
 }
 
@@ -27,20 +31,28 @@ const mutations = {
 
 const actions = {
     login({ commit }, payload) {
-        axios.post("http://localhost/api/user", payload)
+        const auth = {
+            email: payload.email,
+            password: payload.password
+        }
+        http.post("/user", auth)
         .then(response => {
-            commit('login', response.data.user)
-            localStorage.setItem('token', response.data.token)
+            const user = response.data.user
+            commit('login', user)
+            sessionStorage.setItem('token', response.data.token)
+            router.push(`/user/${user.id}`)
         }).catch(err => {
             payload.component.error = 'アカウントが存在しません。メールアドレスかパスワードを確認してください。'
         })
     },
 
     register({ commit }, payload) {
-        axios.post("http://localhost/api/user/register", payload)
+        http.post("/user/register", payload)
         .then(response => {
-            commit('login', response.data.user)
-            localStorage.setItem('token', response.data.token)
+            const user = response.data.user
+            commit('login', user)
+            sesstionStorage.setItem('token', response.data.token)
+            router.push(`/user/${user.id}`)
         }).catch(err => {
 
         })

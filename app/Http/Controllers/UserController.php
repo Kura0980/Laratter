@@ -42,4 +42,29 @@ class UserController extends Controller
         return $user;
     }
 
+    /**
+     * ユーザを取得する
+     * 
+     * @return array
+     */
+    public function show(int $id)
+    {
+        $user = User::where('id', '=', $id)->first();
+        return ['name' => $user['name']];
+    }
+
+    /**
+     * ユーザの投稿を取得する
+     * @param int $userId ユーザID
+     * 
+     * @return array
+     */
+    public function getPosts(int $id)
+    {
+        $user = User::find($id);
+        $posts = $user->getPost;
+
+        return $posts;
+    }
+
 }
