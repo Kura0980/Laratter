@@ -17,6 +17,13 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = \Validator::make($request->all(), [
+            'sentence' => 'required'
+        ]);
+        if ($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
         $newPost = $request->only('sentence');
         $user = auth()->user();
         $newPost['user_id'] = $user->id;

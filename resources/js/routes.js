@@ -13,7 +13,7 @@ import Edit from './components/Edit.vue'
 export const routes = [
     { path: '/', component: Login },
     { path: '/signup', component: Signup},
-    { path: '/user/:id', component: User, meta: {requiresAuth: true},
+    { path: '/user/:id(\\d+)', component: User, meta: {requiresAuth: true},
         children: [
             { path: '', component: Posts }
         ]

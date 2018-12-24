@@ -21,8 +21,8 @@ Route::post('/user', 'UserController@authnication');
 Route::post('/user/register', 'UserController@register');
 
 Route::group(['middleware' => 'jwt.auth'], function () {
-    Route::get('/user/{id}', 'UserController@show');
-    Route::get('/user/{id}/post', 'UserController@getPosts');
+    Route::get('/user/{id}', 'UserController@show')->where('id', '[0-9]+');
+    Route::get('/user/{id}/post', 'UserController@getPosts')->where('id', '[0-9]+');
 
     Route::post('/post', 'PostController@store');
 });
