@@ -75,15 +75,61 @@ class UserController extends Controller
 
     /**
      * ユーザの投稿を取得する
-     * @param int $userId ユーザID
+     * @param int $id ユーザID
      * 
      * @return array
      */
     public function getPosts(int $id)
     {
-        $user = User::find($id);
-        $posts = $user->getPost;
+        $loginUserId = auth()->user()->id;
+
+        $posts = \DB::table('users')
+        ->select(
+            'users.id AS user_id',
+            'users.name',
+            'posts.id AS post_id',
+            'posts.user_id',
+            'posts.sentence',
+            \DB::raw('CASE WHEN likes.user_id IS NOT NULL THEN true ELSE false END AS is_like')
+            )
+        ->join('posts', 'users.id', '=', 'posts.user_id')
+        ->leftJoin('likes', function($join) use ($loginUserId) {
+            $join->on('posts.id', '=', 'likes.post_id')
+                 ->where('likes.user_id', '=', $loginUserId);
+        })->where('posts.user_id', $id)
+        ->get();
+
         return $posts;
     }
 
+    /**
+     * いいねした記事を取得する
+     * 
+     * @param int $id ユーザID
+     * 
+     */
+    public function getLikes(int $id) {
+
+        $loginUserId = auth()->user()->id;
+
+        $likes = \DB::table('users')
+        ->select(
+            'users.id AS user_id',
+            'users.name',
+            'posts.id AS post_id',
+            'posts.user_id',
+            'posts.sentence',
+            \DB::raw('CASE WHEN likes.user_id IS NOT NULL THEN true ELSE false END AS is_like')
+            )
+        ->join('posts', 'users.id', '=', 'posts.user_id')
+        ->join('likes', function($join) use ($id) {
+            $join->on('posts.id', '=', 'likes.post_id')
+                 ->where('likes.user_id', $id);
+        })
+        ->leftjoin('likes AS is_likes', function($join) use ($loginUserId) {
+            $join->on('posts.id', '=', 'is_likes.post_id')
+                 ->where('is_likes.user_id', '=', $loginUserId);
+        })->get();
+        return $likes;
+    }
 }

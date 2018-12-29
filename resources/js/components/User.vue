@@ -13,10 +13,10 @@
         </div>
         <div>
             <nav class="nav nav-justified">
-                <router-link class="nav-item nav-link active" :to="`/user/${$route.params.id}`">ツイート</router-link>
-                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follor`">フォロー</router-link>
-                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follwer`">フォロワー</router-link>
-                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/like`">いいね</router-link>
+                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}`" exact-active-class="active">ツイート</router-link>
+                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follor`" exact-active-class="active">フォロー</router-link>
+                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follwer`" exact-active-class="active">フォロワー</router-link>
+                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/like`" exact-active-class="active">いいね</router-link>
             </nav>        
         </div>
         <router-view></router-view>
@@ -44,8 +44,12 @@ export default {
             })
         }
     },
+    watch: {
+        '$route' (to, from) {
+            this.fetchUser(to.params.id)
+        }
+    },
     created() {
-        console.log('hoge')
         this.fetchUser(this.$route.params.id)
     }
 }
