@@ -14,6 +14,7 @@ class PostTest extends TestCase
     public function setUp() {
         parent::setUp();
         Artisan::call('migrate:refresh');
+        Artisan::call('migrate');
         Artisan::call('db:seed');
         factory(Post::class, 20)->create();
     }
@@ -28,7 +29,7 @@ class PostTest extends TestCase
         //正常系
         $user = factory(User::class)->create();
         $headers = ['Authorization' => 'Bearer ' . JWTAuth::fromUser($user)];
-        $response = $this->actingAs($user)->json('POST', '/api/post', ['sentence' => 'test'], $headers);
+        $response = $this->json('POST', '/api/post', ['sentence' => 'test'], $headers);
         $response->assertStatus(200);
 
         //異常系(投稿が空だった場合)
@@ -46,13 +47,24 @@ class PostTest extends TestCase
         $post = Post::find(1);
         $user = factory(User::class)->create();
         $headers = ['Authorization' => 'Bearer ' . JWTAuth::fromUser($user)];
-        $response = $this->actingAs($user)->json('GET', '/api/user/'.$post->user_id.'/post', [], $headers);
+        $response = $this->json('GET', '/api/user/'.$post->user_id.'/post', [], $headers);
         $response->assertStatus(200)
         ->assertJson([[
-            'id' => true,
-            'user_id' => true,
-            'sentence' => true
+            'post_id' => true,
+            'user_id' => $post->user_id,
+            'name' => true, 
+            'sentence' => true,
+            'is_like' => false
         ]]);
     }
 
+    /**
+     * いいねした記事の取得テスト
+     * 
+     * @return voids
+     */
+    public function testLike()
+    {
+
+    }
 }

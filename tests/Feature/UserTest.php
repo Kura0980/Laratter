@@ -48,7 +48,7 @@ class UserTest extends TestCase
             'password' => ''
         ];
         $response = $this->json('POST', '/api/user', $param);
-        $response->assertStatus(400);
+        $response->assertStatus(401);
 
     }
 
