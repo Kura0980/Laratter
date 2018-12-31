@@ -1,7 +1,9 @@
 <template>
-    <div class="div-tweet">
-        <app-post v-if="posts" v-for="(post, index) in posts" v-bind:key="index" v-bind:post="post" v-bind:name="post.name"></app-post>
-        <span v-else class="align-bottom">ツイートがありません</span>
+    <div v-if="posts.length" class="div-tweet">
+        <app-post v-for="(post, index) in posts" v-bind:key="index" v-bind:post="post" v-bind:name="post.name"></app-post>
+    </div>
+    <div v-else class="div-notweet">
+        <span class="align-bottom">ツイートがありません</span>
     </div>
 </template>
 

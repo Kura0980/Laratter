@@ -7,6 +7,8 @@ import Login from './components/Login.vue'
 import Signup from './components/Signup.vue'
 import User from './components/User.vue'
 import Posts from './components/Posts.vue'
+import Follow from './components/Follows.vue'
+import Followers from './components/Followers'
 import Likes from './components/Likes.vue'
 //import Profile from './components/Profile.vue'
 import Edit from './components/Edit.vue'
@@ -17,6 +19,8 @@ export const routes = [
     { path: '/user/:id(\\d+)', component: User, meta: {requiresAuth: true},
         children: [
             { path: '', component: Posts },
+            { path: 'follow', component: Follow },
+            { path: 'follower', component: Followers},
             { path: 'like', component: Likes }
         ]
     },
