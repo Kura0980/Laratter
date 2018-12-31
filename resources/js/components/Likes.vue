@@ -1,7 +1,9 @@
 <template>
-    <div class="div-tweet">
-        <app-post v-if="likes" v-for="(like, index) in likes" v-bind:key="index" v-bind:post="like" v-bind:name="like.name"></app-post>
-        <span v-else class="align-bottom">いいねがありません</span>
+    <div v-if="likes.length" class="div-tweet">
+        <app-post v-for="(like, index) in likes" v-bind:key="index" v-bind:post="like" v-bind:name="like.name"></app-post>
+    </div>
+    <div v-else>
+        <span class="align-bottom">まだいいねがありません</span>
     </div>
 </template>
 

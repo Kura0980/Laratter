@@ -69,8 +69,21 @@ class UserController extends Controller
      */
     public function show(int $id)
     {
-        $user = User::where('id', '=', $id)->first();
-        return ['name' => $user['name']];
+        $loginUserId = auth()->user()->id;
+        $user = \DB::table('users')
+        ->select(
+            'users.id',
+            'users.name',
+            \DB::raw('CASE WHEN follows.id IS NOT NULL THEN true ELSE false END AS is_follow')
+        )
+        ->leftJoin('follows', function($join) use ($loginUserId) {
+            $join->on('users.id', '=', 'follows.follow_id')
+                  ->where('follows.follower_id', '=', $loginUserId);
+        })
+        ->where('users.id', '=', $id)
+        ->first();
+        
+        return response()->json($user);
     }
 
     /**
@@ -100,6 +113,52 @@ class UserController extends Controller
         ->get();
 
         return $posts;
+    }
+
+    /**
+     * フォローしているユーザを取得する
+     * 
+     */
+    public function getFollowUsers(int $id) {
+        $loginUserId = auth()->user()->id;
+
+        $users = \DB::table('users')
+        ->select(
+            'users.id',
+            'users.name',
+            \DB::raw('CASE WHEN is_follows.id IS NOT NULL THEN true ELSE false END AS is_follow')
+            )
+        ->join('follows', 'users.id', '=', 'follows.follow_id')
+        ->leftJoin('follows AS is_follows', function($join) use ($loginUserId) {
+            $join->on('users.id', '=', 'is_follows.follow_id')
+                 ->where('is_follows.follower_id', '=', $loginUserId);
+        })
+        ->where('follows.follower_id', '=', $id)
+        ->get();
+        return $users;
+    }
+
+    /**
+     * フォローされているユーザを取得する
+     * 
+     */
+    public function getFollowerUsers(int $id) {
+        $loginUserId = auth()->user()->id;
+
+        $users = \DB::table('users')
+        ->select(
+            'users.id',
+            'users.name',
+            \DB::raw('CASE WHEN is_follows.id IS NOT NULL THEN true ELSE false END AS is_follow')
+            )
+        ->join('follows', 'users.id', '=', 'follows.follower_id')
+        ->leftJoin('follows AS is_follows', function($join) use ($loginUserId) {
+            $join->on('users.id', '=', 'is_follows.follow_id')
+                 ->where('is_follows.follower_id', '=', $loginUserId);
+        })
+        ->where('follows.follow_id', '=', $id)
+        ->get();
+        return $users;
     }
 
     /**

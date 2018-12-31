@@ -6,7 +6,9 @@
         </div>
         <div class="user-profile">
             <div class="d-flex flex-row-reverse">
-                <button class="btn btn-outline-success profile-edit-button">プロフィール編集</button>
+                <button v-if="user.id === loginUser.id" class="btn btn-outline-success profile-edit-button">プロフィール編集</button>
+                <button v-else-if="!isFollow" class="btn btn-outline-success profile-edit-button" @click="changeFollow">フォロー</button>
+                <button v-else-if="isFollow" class="btn btn-success profile-edit-button" @click="changeFollow">フォロー</button>
             </div>
             <div><h3>{{ user.name }}</h3></div>
             <div><span>コメント</span></div>
@@ -14,8 +16,8 @@
         <div>
             <nav class="nav nav-justified">
                 <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}`" exact-active-class="active">ツイート</router-link>
-                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follor`" exact-active-class="active">フォロー</router-link>
-                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follwer`" exact-active-class="active">フォロワー</router-link>
+                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follow`" exact-active-class="active">フォロー</router-link>
+                <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/follower`" exact-active-class="active">フォロワー</router-link>
                 <router-link class="nav-item nav-link" :to="`/user/${$route.params.id}/like`" exact-active-class="active">いいね</router-link>
             </nav>        
         </div>
@@ -25,12 +27,22 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import http from '../http'
+import follow from '../follow'
 
 export default {
     data() {
         return {
             user: {}
+        }
+    },
+    computed: {
+        ...mapGetters({
+            loginUser: 'user'
+        }),
+        isFollow () {
+            return this.user.is_follow
         }
     },
     methods: {
@@ -42,6 +54,15 @@ export default {
             .catch(err => {
 
             })
+        },
+        changeFollow() {
+            const isFollow = !this.user.is_follow
+            if(isFollow) {
+                this.follow(this.user.id, this);
+            }else {
+                this.cancelFollow(this.user.id, this);
+            }
+
         }
     },
     watch: {
@@ -51,7 +72,8 @@ export default {
     },
     created() {
         this.fetchUser(this.$route.params.id)
-    }
+    },
+    mixins:[follow]
 }
 </script>
 
