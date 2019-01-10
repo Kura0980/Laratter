@@ -32,7 +32,7 @@ services:
     build: ./docker/node
     volumes:
       - .:/app
-      - node-module-volume:/app/node-modules
+      - node-module-volume:/app/node_modules
     tty: true
 volumes:
   composer-volume:

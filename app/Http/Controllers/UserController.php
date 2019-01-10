@@ -52,7 +52,6 @@ class UserController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-
         $newUser = $request->only('name', 'email', 'password');
         $user = new User();
         $user->fill($newUser);
@@ -74,6 +73,9 @@ class UserController extends Controller
         ->select(
             'users.id',
             'users.name',
+            'users.icon_img',
+            'users.header_img',
+            'users.description',
             \DB::raw('CASE WHEN follows.id IS NOT NULL THEN true ELSE false END AS is_follow')
         )
         ->leftJoin('follows', function($join) use ($loginUserId) {
@@ -83,6 +85,29 @@ class UserController extends Controller
         ->where('users.id', '=', $id)
         ->first();
         
+        return response()->json($user);
+    }
+
+    /**
+     * ユーザ情報を変更する
+     * @param Request $request
+     * 
+     * @return array
+     */
+    public function editUser(Request $request)
+    {
+
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string',
+            'description' => 'string'
+        ]);
+        $loginUserId = auth()->user()->id;
+
+        $user = User::find($loginUserId);
+        $user->name = $request->name;
+        $user->description = $request->description;
+        $user->save();
+
         return response()->json($user);
     }
 
@@ -100,6 +125,7 @@ class UserController extends Controller
         ->select(
             'users.id AS user_id',
             'users.name',
+            'users.icon_img',
             'posts.id AS post_id',
             'posts.user_id',
             'posts.sentence',
@@ -126,6 +152,7 @@ class UserController extends Controller
         ->select(
             'users.id',
             'users.name',
+            'users.icon_img',
             \DB::raw('CASE WHEN is_follows.id IS NOT NULL THEN true ELSE false END AS is_follow')
             )
         ->join('follows', 'users.id', '=', 'follows.follow_id')
@@ -149,6 +176,7 @@ class UserController extends Controller
         ->select(
             'users.id',
             'users.name',
+            'users.icon_img',
             \DB::raw('CASE WHEN is_follows.id IS NOT NULL THEN true ELSE false END AS is_follow')
             )
         ->join('follows', 'users.id', '=', 'follows.follower_id')
@@ -167,7 +195,8 @@ class UserController extends Controller
      * @param int $id ユーザID
      * 
      */
-    public function getLikes(int $id) {
+    public function getLikes(int $id)
+    {
 
         $loginUserId = auth()->user()->id;
 
@@ -175,6 +204,7 @@ class UserController extends Controller
         ->select(
             'users.id AS user_id',
             'users.name',
+            'users.icon_img',
             'posts.id AS post_id',
             'posts.user_id',
             'posts.sentence',
@@ -191,4 +221,64 @@ class UserController extends Controller
         })->get();
         return $likes;
     }
+
+    /**
+     * アイコンを登録する
+     * @param Request $request
+     * 
+     * @return array
+     */
+    public function icon(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'file' => 'required|mimes:png,jpeg,jpg|max:2048'
+        ]);
+        if ($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $userId = auth()->user()->id;
+        $path = '/storage/icon/';
+        $fileName = $userId . '-' . date('ymdHis') . '.jpg';
+
+        $image = \Image::make($request->file('file'));
+        $image->resize(130, 130)
+              ->encode('jpg')
+              ->save(public_path() . $path . $fileName);
+
+        $user = User::find($userId);
+        $user->icon_img = $fileName;
+        $user->save();        
+        return ['icon' => $fileName];
+    }
+
+    /**
+     * ヘッダ画像を登録する
+     * @param Request $request
+     * 
+     * @return array
+     */
+    public function header(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'file' => 'required|mimes:png,jpeg,jpg|max:2048'
+        ]);
+        if ($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+
+        $userId = auth()->user()->id;
+        $path = '/storage/header/';
+        $fileName = $userId . '-' . date('ymdHis') . '.jpg';
+
+        $image = \Image::make($request->file('file'));
+        $image->encode('jpg')
+              ->save(public_path() . $path . $fileName);
+
+        $user = User::find($userId);
+        $user->header_img = $fileName;
+        $user->save();        
+        return ['header' => $fileName];
+    }
+
 }
