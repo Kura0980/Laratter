@@ -26,10 +26,12 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('/user/{id}/follow', 'UserController@getFollowUsers')->where('id', '[0-9]+');
     Route::get('/user/{id}/follower', 'UserController@getFollowerUsers')->where('id', '[0-9]+');
     Route::get('/user/{id}/like', 'UserController@getLikes')->where('id', '[0-9]+');
-
+    Route::put('/user', 'UserController@editUser');
     Route::post('/post', 'PostController@store');
     Route::post('/like', 'LikeController@store');
     Route::delete('/like/{id}', 'LikeController@destroy')->where('id', '[0-9]+');
     Route::post('/follow', 'FollowsController@store');
     Route::delete('/follow/{id}', 'FollowsController@destroy')->where('id', '[0-9]+');
+    Route::post('/user/icon', 'UserController@icon');
+    Route::post('/user/header', 'UserController@header');
 });

@@ -1,9 +1,14 @@
 <template>
-    <div v-if="posts.length" class="div-tweet">
-        <app-post v-for="(post, index) in posts" v-bind:key="index" v-bind:post="post" v-bind:name="post.name"></app-post>
+    <div v-if="is_load" class="d-flex justify-content-center">
+        <img src="/img/icon/loading.gif">
     </div>
-    <div v-else class="div-notweet">
-        <span class="align-bottom">ツイートがありません</span>
+    <div v-else>
+        <div v-if="posts.length" class="div-tweet">
+            <app-post v-for="(post, index) in posts" v-bind:key="index" v-bind:post="post" v-bind:name="post.name" v-bind:icon="post.icon_img"></app-post>
+        </div>
+        <div v-else class="div-notweet">
+            <span class="align-bottom">ツイートがありません</span>
+        </div>
     </div>
 </template>
 
@@ -14,6 +19,7 @@ import Post from './Post.vue'
 export default {
     data() {
         return {
+            is_load: true,
             posts: []
         }
     },
@@ -22,6 +28,7 @@ export default {
             http.get(`/user/${id}/post`)
             .then(response => {
                 this.posts = response.data
+                this.is_load = false
             })
             .catch(err => {
             })

@@ -1,6 +1,7 @@
 <template>
 <div class="media post">
-  <img class="align-self-start mr-3 rounded-circle user-icon" src="/img/icon/default_icon.png" alt="Generic placeholder image">
+  <img v-if="icon !== ''" class="align-self-start mr-3 rounded-circle user-icon" :src="`/storage/icon/${icon}`" alt="Generic placeholder image">
+  <img v-else class="align-self-start mr-3 rounded-circle user-icon" src="/img/icon/default_icon.png" alt="Generic placeholder image">
   <div class="media-body">
     <router-link tag="h5" :to="`/user/${post.user_id}`" class="mt-0">{{ name }}</router-link>
     <p>{{ post.sentence }}</p>
@@ -29,6 +30,8 @@ export default {
     props: {
         post: Object,
         name: String,
+        icon: String,
+        is_load: true,
     },
     methods: {
         changeLike() {
